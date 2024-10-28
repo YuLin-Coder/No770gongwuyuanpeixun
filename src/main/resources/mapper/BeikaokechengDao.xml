@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.BeikaokechengDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.beikaokecheng_name as beikaokechengName
+        ,a.beikaokecheng_video as beikaokechengVideo
+        ,a.beikaokecheng_photo as beikaokechengPhoto
+        ,a.beikaokecheng_money as beikaokechengMoney
+        ,a.jiangshi_id as jiangshiId
+        ,a.beikaokecheng_content as beikaokechengContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.BeikaokechengView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,jiangshi.jiangshi_name as jiangshiName
+        ,jiangshi.sex_types as sexTypes
+        ,jiangshi.jiangshi_photo as jiangshiPhoto
+        ,jiangshi.jiangshi_phone as jiangshiPhone
+        ,jiangshi.jiangshi_money as jiangshiMoney
+        ,jiangshi.jiangshi_content as jiangshiContent
+
+        FROM beikaokecheng  a
+        left JOIN jiangshi jiangshi ON a.jiangshi_id = jiangshi.id
+
+        <where>
+            <if test=" params.beikaokechengName != '' and params.beikaokechengName != null and params.beikaokechengName != 'null' ">
+                and a.beikaokecheng_name like CONCAT('%',#{params.beikaokechengName},'%')
+            </if>
+            <if test=" params.beikaokechengVideo != '' and params.beikaokechengVideo != null and params.beikaokechengVideo != 'null' ">
+                and a.beikaokecheng_video like CONCAT('%',#{params.beikaokechengVideo},'%')
+            </if>
+            <if test=" params.beikaokechengMoney != '' and params.beikaokechengMoney != null and params.beikaokechengMoney != 'null' ">
+                and a.beikaokecheng_money like CONCAT('%',#{params.beikaokechengMoney},'%')
+            </if>
+            <if test="params.jiangshiId != null">
+                and a.jiangshi_id = #{params.jiangshiId}
+            </if>
+            <if test=" params.beikaokechengContent != '' and params.beikaokechengContent != null and params.beikaokechengContent != 'null' ">
+                and a.beikaokecheng_content like CONCAT('%',#{params.beikaokechengContent},'%')
+            </if>
+
+            <if test=" params.jiangshiName != '' and params.jiangshiName != null and params.jiangshiName != 'null' ">
+                and jiangshi.jiangshi_name like CONCAT('%',#{params.jiangshiName},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and jiangshi.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test=" params.jiangshiPhone != '' and params.jiangshiPhone != null and params.jiangshiPhone != 'null' ">
+                and jiangshi.jiangshi_phone like CONCAT('%',#{params.jiangshiPhone},'%')
+            </if>
+            <if test="params.jiangshiMoneyStart != null ">
+                <![CDATA[  and jiangshi.jiangshi_money >= #{params.jiangshiMoneyStart}   ]]>
+            </if>
+            <if test="params.jiangshiMoneyEnd != null ">
+                <![CDATA[  and jiangshi.jiangshi_money <= #{params.jiangshiMoneyEnd}   ]]>
+            </if>
+            <if test=" params.jiangshiContent != '' and params.jiangshiContent != null and params.jiangshiContent != 'null' ">
+                and jiangshi.jiangshi_content like CONCAT('%',#{params.jiangshiContent},'%')
+            </if>
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>

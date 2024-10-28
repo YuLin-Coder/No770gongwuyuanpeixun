@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.JiangshiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.jiangshi_name as jiangshiName
+        ,a.sex_types as sexTypes
+        ,a.jiangshi_photo as jiangshiPhoto
+        ,a.jiangshi_phone as jiangshiPhone
+        ,a.jiangshi_money as jiangshiMoney
+        ,a.jiangshi_content as jiangshiContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.JiangshiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM jiangshi  a
+
+        <where>
+            <if test=" params.jiangshiName != '' and params.jiangshiName != null and params.jiangshiName != 'null' ">
+                and a.jiangshi_name like CONCAT('%',#{params.jiangshiName},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test=" params.jiangshiPhone != '' and params.jiangshiPhone != null and params.jiangshiPhone != 'null' ">
+                and a.jiangshi_phone like CONCAT('%',#{params.jiangshiPhone},'%')
+            </if>
+            <if test="params.jiangshiMoneyStart != null ">
+                <![CDATA[  and a.jiangshi_money >= #{params.jiangshiMoneyStart}   ]]>
+            </if>
+            <if test="params.jiangshiMoneyEnd != null ">
+                <![CDATA[  and a.jiangshi_money <= #{params.jiangshiMoneyEnd}   ]]>
+            </if>
+            <if test=" params.jiangshiContent != '' and params.jiangshiContent != null and params.jiangshiContent != 'null' ">
+                and a.jiangshi_content like CONCAT('%',#{params.jiangshiContent},'%')
+            </if>
+
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>

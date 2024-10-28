@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ZaizhikechengOrderDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.yonghu_id as yonghuId
+        ,a.zaizhikecheng_id as zaizhikechengId
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ZaizhikechengOrderView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.sex_types as sexTypes
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_xuexiao as yonghuXuexiao
+        ,yonghu.yonghu_zhuanye as yonghuZhuanye
+        ,yonghu.new_money as newMoney
+        ,zaizhikecheng.zaizhikecheng_name as zaizhikechengName
+        ,zaizhikecheng.zaizhikecheng_video as zaizhikechengVideo
+        ,zaizhikecheng.zaizhikecheng_types as zaizhikechengTypes
+        ,zaizhikecheng.zaizhikecheng_photo as zaizhikechengPhoto
+        ,zaizhikecheng.zaizhikecheng_money as zaizhikechengMoney
+        ,zaizhikecheng.jiangshi_id as jiangshiId
+        ,zaizhikecheng.zaizhikecheng_content as zaizhikechengContent
+
+        FROM zaizhikecheng_order  a
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+        left JOIN zaizhikecheng zaizhikecheng ON a.zaizhikecheng_id = zaizhikecheng.id
+
+        <where>
+            <if test="params.gongwuyuanId != null">
+                and a.yonghu_id = #{params.gongwuyuanId}
+            </if>
+            <if test="params.zaizhikechengId != null">
+                and a.zaizhikecheng_id = #{params.zaizhikechengId}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%T:%s') >=
+                DATE_FORMAT(#{params.insertTimeStart}, '%Y-%m-%d %H:%T:%s')   ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%T:%s') <=
+                DATE_FORMAT(#{params.insertTimeEnd} , '%Y-%m-%d %H:%T:%s')    ]]>
+            </if>
+
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and yonghu.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuXuexiao != '' and params.yonghuXuexiao != null and params.yonghuXuexiao != 'null' ">
+                and yonghu.yonghu_xuexiao like CONCAT('%',#{params.yonghuXuexiao},'%')
+            </if>
+            <if test=" params.yonghuZhuanye != '' and params.yonghuZhuanye != null and params.yonghuZhuanye != 'null' ">
+                and yonghu.yonghu_zhuanye like CONCAT('%',#{params.yonghuZhuanye},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and yonghu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and yonghu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+            <if test=" params.zaizhikechengName != '' and params.zaizhikechengName != null and params.zaizhikechengName != 'null' ">
+                and zaizhikecheng.zaizhikecheng_name like CONCAT('%',#{params.zaizhikechengName},'%')
+            </if>
+            <if test=" params.zaizhikechengVideo != '' and params.zaizhikechengVideo != null and params.zaizhikechengVideo != 'null' ">
+                and zaizhikecheng.zaizhikecheng_video like CONCAT('%',#{params.zaizhikechengVideo},'%')
+            </if>
+            <if test="params.zaizhikechengTypes != null">
+                and zaizhikecheng.zaizhikecheng_types = #{params.zaizhikechengTypes}
+            </if>
+
+            <if test=" params.zaizhikechengMoney != '' and params.zaizhikechengMoney != null and params.zaizhikechengMoney != 'null' ">
+                and zaizhikecheng.zaizhikecheng_money like CONCAT('%',#{params.zaizhikechengMoney},'%')
+            </if>
+            <if test="params.jiangshiId != null">
+                and zaizhikecheng.jiangshi_id = #{params.jiangshiId}
+            </if>
+            <if test=" params.zaizhikechengContent != '' and params.zaizhikechengContent != null and params.zaizhikechengContent != 'null' ">
+                and zaizhikecheng.zaizhikecheng_content like CONCAT('%',#{params.zaizhikechengContent},'%')
+            </if>
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>
